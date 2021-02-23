@@ -5,7 +5,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { setLocalData, setSessionKey } from './utils/helper';
 import { getListMessage } from './utils/api/message';
 import * as _ from 'lodash';
-import { random } from 'lodash';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 class App extends React.Component {
     constructor(props) {
@@ -258,43 +258,72 @@ const RandomColorBox = () => {
 };
 
 const MessageChatComponent = () => {
-    let initMessages = [
-    ];
+    let initMessages = [];
 
     const [chatText, setChatText] = useState('');
     let [messages, setMessages] = useState(initMessages);
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJzdWIiOiI2MDJkNWYwMmU5Njc3N2Q3M2E0MTdlYjAiLCJpYXQiOjE2MTQwNzMxNTgsImV4cCI6MTYxNDE1OTU1OH0.15Sp-2vxAqJLfl6-i_08UnYaQ6NMhmWSZ72uAZz825U";
+    let token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJzdWIiOiI2MDJkNWYwMmU5Njc3N2Q3M2E0MTdlYjAiLCJpYXQiOjE2MTQwNzMxNTgsImV4cCI6MTYxNDE1OTU1OH0.15Sp-2vxAqJLfl6-i_08UnYaQ6NMhmWSZ72uAZz825U';
     setSessionKey(token);
 
+    let socketUrl = 'ws://localhost:3001';
+
     useEffect(async () => {
+        getOldMessage();
+    }, []);
+
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+        protocols: token,
+        onMessage: (evt) => {
+            const message = JSON.parse(evt.data);
+
+            if (message.event === 'msgToClient') {
+                try {
+                    let data = message.data;
+
+                    if (data.from && data.content) {
+                        let _messages = messages;
+                        _messages.push({
+                            from: data.from ? data.from : '',
+                            content: data.content ? data.content : '',
+                        });
+
+                        setMessages(_messages);
+
+                    }
+                } catch (ex) {}
+            }
+        },
+    });
+
+    const getOldMessage = async () => {
+        // alert('anc');
+
         try {
             let res = await getListMessage();
 
             let messages = _.map(res, (item) => {
                 return _.pick(item, ['from', 'content', 'timestamp']);
             });
-            messages = _.slice(messages, 0, 5)
-            messages = _.reverse(messages)
+            messages = _.slice(messages, 0, 5);
+            messages = _.reverse(messages);
 
-            setMessages(messages)
-        }
-        catch {
-
-        }
-    })
+            setMessages(messages);
+        } catch {}
+    };
 
     const _handleClickAddMessage = () => {
         let text = chatText;
-
         if (text === '') return;
 
-        let _messages = messages;
-        _messages.push({
-            from: 'Zindousm',
-            content: text,
-        });
+        const message = {
+            event: 'message',
+            data: {
+                content: text,
+            },
+        };
+        sendMessage(JSON.stringify(message));
 
-        setMessages(_messages);
         setChatText('');
     };
 
@@ -322,7 +351,7 @@ const MessageChatComponent = () => {
                 />
                 <div
                     style={{
-                        margin: 0
+                        margin: 0,
                     }}
                 >
                     <div
