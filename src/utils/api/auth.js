@@ -15,16 +15,16 @@ export const login = (uname, password) => {
     })
 }
 
-export const logout = () => {
-    return api.makeAuthRequest({
-        url: 'auth/logout',
-        method: 'GET',
-    })
-}
+// export const logout = () => {
+//     return api.makeAuthRequest({
+//         url: 'auth/logout',
+//         method: 'GET',
+//     })
+// }
 
 export const getUserInfo = () => {
     return api.makeAuthRequest({
-        url: 'auth/getme',
+        url: 'auth/my-info',
         method: 'GET',
         data: {
         }

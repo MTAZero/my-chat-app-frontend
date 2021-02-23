@@ -1,10 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
 
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { setLocalData, setSessionKey } from './utils/helper';
 import { getListMessage } from './utils/api/message';
-import * as _ from "lodash"
+import * as _ from 'lodash';
+import { random } from 'lodash';
 
 class App extends React.Component {
     constructor(props) {
@@ -24,26 +25,23 @@ class App extends React.Component {
 
     // lifecycle
     componentDidMount = () => {
-        this._connectSocket()
+        this._connectSocket();
     };
 
     // api
     getOldMessage = async () => {
         try {
-            let res = await getListMessage()
-            
+            let res = await getListMessage();
+
             let messages = _.map(res, (item) => {
-                return _.pick(item, ["from", "content", "timestamp"])
-            })
+                return _.pick(item, ['from', 'content', 'timestamp']);
+            });
 
             this.setState({
-                messages
-            })
-        }
-        catch (ex){
-
-        }
-    }
+                messages,
+            });
+        } catch (ex) {}
+    };
 
     // socket handle
     _connectSocket = () => {
@@ -58,12 +56,12 @@ class App extends React.Component {
             this.ws.onmessage = this._handleOnMessage;
             this.ws.onclose = this._handleSocketClose;
 
-            this.getOldMessage()
+            this.getOldMessage();
         } catch (ex) {
             if (!this.ws)
-            setTimeout(() => {
-                this._reconnect();
-            }, 5000);
+                setTimeout(() => {
+                    this._reconnect();
+                }, 5000);
         }
     };
 
@@ -147,4 +145,208 @@ class App extends React.Component {
     }
 }
 
-export default App;
+const CountingComponent = () => {
+    const [count, setCount] = useState(10);
+
+    return (
+        <div>
+            Count number: {count}
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                }}
+            >
+                <div
+                    style={{
+                        cursor: 'pointer',
+                        backgroundColor: '#f2f2f2',
+                        color: 'black',
+                        width: 50,
+                        height: 50,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    onClick={(e) => setCount(count + 1)}
+                >
+                    +
+                </div>
+
+                <div
+                    style={{
+                        cursor: 'pointer',
+                        backgroundColor: '#f2f2f2',
+                        color: 'black',
+                        width: 50,
+                        height: 50,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    onClick={(e) => setCount(count - 1)}
+                >
+                    -
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const randomColor = () => {
+    let listColor = [
+        'orange',
+        'red',
+        'green',
+        'gray',
+        'yello',
+        'pink',
+        'aqua',
+        'lightblue',
+    ];
+
+    let i = Math.floor(Math.random() * 8);
+
+    return listColor[i] ? listColor[i] : 'gray';
+};
+
+const RandomColorBox = () => {
+    const RandomItem = (props) => {
+        const [bgColor, setBgColor] = useState(props.color);
+
+        return (
+            <div
+                className="RandomItem"
+                style={{
+                    backgroundColor: bgColor,
+                }}
+                onClick={() => {
+                    setBgColor(randomColor());
+                }}
+            ></div>
+        );
+    };
+
+    const initColors = [];
+    let numberColor = Math.floor(Math.random() * 10);
+    for (let index = 0; index < numberColor; index++)
+        initColors.push(randomColor());
+
+    const [colors, setColors] = useState(initColors);
+
+    return (
+        <>
+            <div className="RandomColorBox">
+                {colors.map((color, index) => {
+                    return <RandomItem key={index} color={color} />;
+                })}
+            </div>
+            <div
+                className="ButtonBase"
+                onClick={() => {
+                    let newColors = [];
+                    for (let index = 0; index < colors.length; index++)
+                        newColors.push(randomColor());
+
+                    setColors(newColors);
+                }}
+            >
+                Random All
+            </div>
+        </>
+    );
+};
+
+const MessageChatComponent = () => {
+    let initMessages = [
+    ];
+
+    const [chatText, setChatText] = useState('');
+    let [messages, setMessages] = useState(initMessages);
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJzdWIiOiI2MDJkNWYwMmU5Njc3N2Q3M2E0MTdlYjAiLCJpYXQiOjE2MTQwNzMxNTgsImV4cCI6MTYxNDE1OTU1OH0.15Sp-2vxAqJLfl6-i_08UnYaQ6NMhmWSZ72uAZz825U";
+    setSessionKey(token);
+
+    useEffect(async () => {
+        try {
+            let res = await getListMessage();
+
+            let messages = _.map(res, (item) => {
+                return _.pick(item, ['from', 'content', 'timestamp']);
+            });
+            messages = _.slice(messages, 0, 5)
+            messages = _.reverse(messages)
+
+            setMessages(messages)
+        }
+        catch {
+
+        }
+    })
+
+    const _handleClickAddMessage = () => {
+        let text = chatText;
+
+        if (text === '') return;
+
+        let _messages = messages;
+        _messages.push({
+            from: 'Zindousm',
+            content: text,
+        });
+
+        setMessages(_messages);
+        setChatText('');
+    };
+
+    return (
+        <div className="ChatApp">
+            {messages.map((message, index) => {
+                return (
+                    <div className="MessageItem" key={index}>
+                        <div className="MessageTitle">{message.from}: </div>
+                        <div className="MessageContent">{message.content}</div>
+                    </div>
+                );
+            })}
+            <div className="InputBox">
+                <textarea
+                    value={chatText}
+                    type="text"
+                    className="InputTextInput"
+                    onChange={(e) => {
+                        setChatText(e.target.value);
+                    }}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') _handleClickAddMessage();
+                    }}
+                />
+                <div
+                    style={{
+                        margin: 0
+                    }}
+                >
+                    <div
+                        className="ButtonSend"
+                        onClick={() => {
+                            _handleClickAddMessage();
+                        }}
+                    >
+                        Gửi
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const Main = () => {
+    return (
+        <React.Fragment>
+            {/* <CountingComponent />
+            <RandomColorBox /> */}
+            <MessageChatComponent />
+        </React.Fragment>
+    );
+};
+
+export default Main;
