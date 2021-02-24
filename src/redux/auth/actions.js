@@ -4,7 +4,9 @@ const type = {
     UPDATE_STATE: prefix + 'update_state',
 
     LOGIN: prefix + 'LOGIN',
-    LOGOUT: prefix + 'LOGOUT'
+    LOGOUT: prefix + 'LOGOUT',
+
+    CHECK_SESSION: prefix + 'check_session'
 }
 
 const action = {
@@ -31,6 +33,15 @@ const action = {
             type: type.LOGOUT,
             payload: {
 
+            }
+        }
+    },
+
+    checkSession: () => {
+        return {
+            type: type.CHECK_SESSION,
+            payload: {
+                
             }
         }
     }

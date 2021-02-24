@@ -1,4 +1,12 @@
+import { key_const } from '../../const';
+import { getLocalData } from '../../utils/helper';
 import actions from './actions'
+
+const _getSessionKey = () => {
+    const session_key = getLocalData(key_const.session_key, null);
+    return session_key ? session_key : null;
+};
+
 
 const default_user = {
     fullName: "",
@@ -12,8 +20,8 @@ const default_user = {
 }
 
 const initState = {
-    isLoggedIn: false,
-    token: "",
+    isLoggedIn: _getSessionKey() !== null,
+    token: _getSessionKey(),
     userInfo: default_user
 }
 
@@ -29,6 +37,9 @@ const reducer = (state = initState, action) => {
             return state 
 
         case actions.type.LOGOUT:
+            return state
+
+        case actions.type.CHECK_SESSION:
             return state
 
         default:

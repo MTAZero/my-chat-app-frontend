@@ -16,7 +16,7 @@ import ChatPage from './pages/chat-page';
 import TestContextPage from './pages/test-context-page';
 import { AdminRouter } from './routers';
 
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './redux/reducers';
 import { ThemeProvider, themes } from './context';
@@ -26,11 +26,21 @@ import { RouterLinks } from './const';
 // lib
 import ReactNotification from 'react-notifications-component';
 import { NotificationsService } from './utils/helper';
-import { store } from './redux/store'
+import { store } from './redux/store';
+import { LoginRequireComponent } from './components/login-require';
+
+import Boot from './redux/boot'
+import { useActions } from './redux';
 
 // const store = createStore(rootReducer);
 
 const Main = () => {
+    const actions = useActions()
+
+    useEffect(() => {
+        // dispatch(actions.AuthActions.checkSession())
+        store.dispatch(actions.AuthActions.checkSession())
+    }, [])
 
     return (
         <>
@@ -40,12 +50,10 @@ const Main = () => {
                     <Provider store={store}>
                         <Router>
                             <Switch>
-                                <Route path={RouterLinks.TestContext}>
-                                    <TestContextPage />
-                                </Route>
-                                <Route path={RouterLinks.Admin}>
-                                    <AdminRouter />
-                                </Route>
+                                <LoginRequireComponent
+                                    component={AdminRouter}
+                                    path={RouterLinks.Admin}
+                                />
                                 <Route path={RouterLinks.Login}>
                                     <LoginPage />
                                 </Route>
@@ -58,5 +66,9 @@ const Main = () => {
         </>
     );
 };
+
+Boot()
+    .then(() => Main())
+    .catch(error => console.log('render error : ', error))
 
 export default Main;

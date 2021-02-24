@@ -5,21 +5,39 @@ import './index.scss';
 import { useTheme, themes } from '../../context';
 import { languages, useLanguage } from '../../context/language.context';
 import { NotificationsService } from '../../utils/helper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useActions } from '../../redux';
+import { Redirect, useLocation } from 'react-router-dom';
+import { RouterLinks } from '../../const';
 
-const LoginPage = () => {
+const LoginPage = (props) => {
     const { t } = useLanguage();
+
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
 
-    const dispatch = useDispatch()
-    const actions =  useActions()
+    const dispatch = useDispatch();
+    const actions = useActions();
+
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
     useEffect(() => {});
 
+    const location = useLocation();
+
+    let nextPage = RouterLinks.ChatPage;
+    try {
+        nextPage = location.state.from;
+    } catch {}
+
+    if (isLoggedIn) {
+        if (nextPage !== RouterLinks.Login) return <Redirect to={nextPage} />;
+        else return <Redirect to={RouterLinks.ChatPage} />;
+    }
+
+    // handle
     const _handleLogin = () => {
-        dispatch(actions.AuthActions.login(username, password))
+        dispatch(actions.AuthActions.login(username, password));
     };
 
     return (
@@ -43,8 +61,7 @@ const LoginPage = () => {
                             type="text"
                             className="LGP_RowInfoTextBox"
                             onKeyPress={(e) => {
-                                if (e.key === "Enter")
-                                    _handleLogin()
+                                if (e.key === 'Enter') _handleLogin();
                             }}
                         />
                     </div>
@@ -61,8 +78,7 @@ const LoginPage = () => {
                             type="password"
                             className="LGP_RowInfoTextBox"
                             onKeyPress={(e) => {
-                                if (e.key === "Enter")
-                                    _handleLogin()
+                                if (e.key === 'Enter') _handleLogin();
                             }}
                         />
                     </div>

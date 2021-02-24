@@ -4,16 +4,17 @@ import actions from './actions';
 // helper
 import { NotificationsService, setLocalData } from '../../utils/helper';
 import APIServices from '../../utils/api';
+import { key_const } from '../../const';
 
 function* saga_Login(action) {
     try {
         const { username, password } = action.payload;
 
-        let LoginResponse = yield APIServices.Auth.login(username, password)
+        let LoginResponse = yield APIServices.Auth.login(username, password);
 
         if (LoginResponse.access_token) {
-            let sessionKey = LoginResponse.access_token
-            setLocalData("session_key", sessionKey);
+            let sessionKey = LoginResponse.access_token;
+            setLocalData(key_const.session_key, sessionKey);
             const userInfo = LoginResponse.user;
 
             // login success
@@ -107,7 +108,7 @@ function* saga_Login(action) {
 
 function* saga_Logout() {
     try {
-        setLocalData('session_key', null);
+        setLocalData(key_const.session_key, null);
         NotificationsService.success(
             'Đăng xuất thành công',
             'Tạm biệt',
@@ -127,43 +128,30 @@ function* saga_Logout() {
     }
 }
 
-// function* saga_CheckSessionKey() {
-//     try {
-//         var request = yield checkSession();
+function* saga_CheckSessionKey() {
+    try {
+        let req = yield APIServices.Auth.getUserInfo();
+        let userInfo = req;
 
-//         if (request.code !== 200) {
-//             yield put(
-//                 actions.action.updateState({
-//                     session_key: null,
-//                     isLoggedIn: false,
-//                     userInfo: null,
-//                     isLoading: false,
+        yield put(
+            actions.action.updateState({
+                userInfo,
+                current_user_info: userInfo,
+            }),
+        );
+    } catch (ex) {
+        console.log('[Auth] Get user info error : ', ex.message);
 
-//                     showMessageChangePassword: false,
-//                     isChangePasswordOk: false,
-//                 })
-//             );
-//             setLocalData("session_key", null);
-//         }
-//     } catch (ex) {
-//         console.log("[Auth] Get user info error : ", ex.message);
-
-//         if (ex.message && ex.message.code) {
-//             yield put(
-//                 actions.action.updateState({
-//                     session_key: null,
-//                     isLoggedIn: false,
-//                     userInfo: null,
-//                     isLoading: false,
-
-//                     showMessageChangePassword: false,
-//                     isChangePasswordOk: false,
-//                 })
-//             );
-//             setLocalData("session_key", null);
-//         }
-//     }
-// }
+        yield put(
+            actions.action.updateState({
+                session_key: null,
+                isLoggedIn: false,
+                userInfo: null,
+            }),
+        );
+        setLocalData(key_const.session_key, null);
+    }
+}
 
 // function* saga_CheckSessionKeyAdmin() {
 //     try {
@@ -357,7 +345,7 @@ function* listen() {
     yield takeEvery(actions.type.LOGIN, saga_Login);
     // yield takeEvery(actions.type.LOGIN_ADMIN, saga_LoginAdmin);
 
-    // yield takeEvery(actions.type.CHECK_SESSION, saga_CheckSessionKey);
+    yield takeEvery(actions.type.CHECK_SESSION, saga_CheckSessionKey);
     // yield takeEvery(
     //     actions.type.CHECK_SESSION_ADMIN,
     //     saga_CheckSessionKeyAdmin

@@ -4,6 +4,6 @@ export const RouterLinks = {
     Admin: '/admin',
     ChatPage: '/admin/chat-page',
 
-    TestContext: '/test-context'
+    TestContext: '/admin/test-context'
 
 }
