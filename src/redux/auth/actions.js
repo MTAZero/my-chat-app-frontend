@@ -1,13 +1,22 @@
 const prefix = 'auth/'
 
 const type = {
-    LOGIN: prefix + 'LOGIN',
-    LOGIN_SUCCESS: prefix + 'LOGIN_SUCCESS',
+    UPDATE_STATE: prefix + 'update_state',
 
+    LOGIN: prefix + 'LOGIN',
     LOGOUT: prefix + 'LOGOUT'
 }
 
 const action = {
+    updateState: (state = {}) => {
+        return {
+            type: type.UPDATE_STATE,
+            payload: {
+                state
+            }
+        }
+    },
+
     login: (username = "", password = "") => {
         return {
             type: type.LOGIN,
@@ -26,6 +35,8 @@ const action = {
         }
     }
 }
+
+export const AuthActions = action
 
 export default {
     type,

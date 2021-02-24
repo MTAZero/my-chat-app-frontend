@@ -1,19 +1,19 @@
-import createApiServices from './createApiServices'
+import createApiServices from '../createApiServices';
 
-const api = createApiServices()
+const api = createApiServices();
 
-// auth 
-export const login = (uname, password) => {
+// auth
+const login = (uname = '', password = '') => {
     const body = {
         password: password,
-        email: uname,
-    }
+        username: uname,
+    };
     return api.makeRequest({
         url: 'auth/login',
         method: 'POST',
         data: body,
-    })
-}
+    });
+};
 
 // export const logout = () => {
 //     return api.makeAuthRequest({
@@ -22,11 +22,15 @@ export const login = (uname, password) => {
 //     })
 // }
 
-export const getUserInfo = () => {
+const getUserInfo = () => {
     return api.makeAuthRequest({
         url: 'auth/my-info',
         method: 'GET',
-        data: {
-        }
-    })
-}
+        data: {},
+    });
+};
+
+export const Auth = {
+    login,
+    getUserInfo,
+};

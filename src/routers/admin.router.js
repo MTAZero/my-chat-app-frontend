@@ -9,8 +9,11 @@ from 'react-router-dom'
 import SideBar from '../pages/share/sidebar'
 import TopBar from '../pages/share/topbar'
 
+import './admin.scss'
+
 // page 
 import ChatPage from '../pages/chat-page'
+import { RouterLinks } from '../const'
 
 export const AdminRouter = () => {
     return (
@@ -23,10 +26,10 @@ export const AdminRouter = () => {
                     
                     <div className="MainContent">
                         <Switch>
-                            <Route path="/chat-app">
+                            <Route path={RouterLinks.ChatPage}>
                                 <ChatPage />
                             </Route>
-                            <Redirect to="/chat-app" />
+                            <Redirect to={RouterLinks.ChatPage} />
                         </Switch>
                     </div>
 
