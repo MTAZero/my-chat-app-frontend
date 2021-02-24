@@ -15,6 +15,7 @@ import {
 } from 'react-router-dom';
 import LoginPage from './pages/login-page';
 import ChatPage from './pages/chat-page';
+import TestContextPage from './pages/test-context-page'
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './redux/reducers';
@@ -30,18 +31,20 @@ const Main = () => {
                 <Provider store={store}>
 
                     <Router>
-                        <h1>My Chat Application</h1>
                         <Switch>
-                            <Route path="/login">
-                                <LoginPage />
+                            <Route path="/test-context">
+                                <TestContextPage />
                             </Route>
                             <Route path="/chat-page">
                                 <ChatPage />
                             </Route>
+                            <Route path="/login">
+                                <LoginPage />
+                            </Route>
                             <Redirect to="/login" />
                         </Switch>
                     </Router>
-                    
+
                 </Provider>
             </LanguageProvider>
         </ThemeProvider>

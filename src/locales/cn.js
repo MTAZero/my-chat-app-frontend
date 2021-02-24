@@ -4,5 +4,9 @@ export default {
 
     "en": "英语",
     "vi": "越南文",
-    "cn": "中国人"
+    "cn": "中国人",
+
+    "username": "用户名",
+    "password": "密码",
+    "login": "登录"
 }

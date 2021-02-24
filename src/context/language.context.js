@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import LanguageTranslater from '../locales'
+import LanguageTranslater from '../locales';
 
 export const languages = {
     vi: 'VI',
     en: 'EN',
-    cn: 'CN'
+    cn: 'CN',
 };
 
 const default_language = languages.vi;
@@ -27,6 +27,8 @@ export const LanguageProvider = ({ children, language }) => {
 
     const t = (key) => {
         return LanguageTranslater[currentLanguage][key]
+            ? LanguageTranslater[currentLanguage][key]
+            : key;
     };
 
     return (

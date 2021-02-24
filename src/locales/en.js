@@ -4,5 +4,9 @@ export default {
 
     "en": "English",
     "vi": "Vietnamese",
-    "cn": "Chinese"
+    "cn": "Chinese",
+
+    "username": "Username",
+    "password": "Password",
+    "login": "Login"
 }

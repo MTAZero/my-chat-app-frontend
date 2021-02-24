@@ -4,5 +4,9 @@ export default {
 
     "en": "Tiếng Anh",
     "vi": "Tiếng Việt",
-    "cn": "Tiếng Trung"
+    "cn": "Tiếng Trung",
+
+    "username": "Tài khoản",
+    "password": "Mật khẩu",
+    "login": "Đăng nhập"
 }

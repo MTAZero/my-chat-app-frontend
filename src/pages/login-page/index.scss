@@ -1,23 +1,78 @@
 .LoginPage {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f2f2f2;
+    flex-direction: column;
 
-    .CounterControlComponent{
-        display: flex;
-        flex-direction: row;
+    
+    .LGP_LoginPanel{
+        // height: 30%;
+        width: 300px;
+        background-color: white;
+        padding: 35px;
+        padding-top: 20px;
+        margin-bottom: 100px;
 
-        .ButtonZ{
-            cursor: pointer;
-            height: 30px;
-            width: 30px;
+        .LGP_LogoImage{
+            height: 80px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0px;
+        }    
+
+        .LGP_RowInfo{
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: lightcoral;
-        }        
+            flex-direction: column;
+            margin-bottom: 15px;
 
-        .ButtonZ:hover{
-            opacity: 0.7;
+            .LGP_RowInfoTitle{
+                margin-bottom: 4px;
+                font-weight: 600;
+            }
+
+            .LGP_RowInfoContent{
+                display: flex;
+                flex: 1;
+
+                .LGP_RowInfoTextBox{
+                    display: flex;
+                    flex: 1;
+                    border: none;
+                    background-color: #f2f2f2;
+                    padding: 10px;
+                    border-radius: 2px;
+                }
+
+                .LGP_RowInfoTextBox:focus{
+                    outline: none;
+                }
+
+            }
         }
 
+        .LGP_ControlPanel{
+            display: flex;
+
+            .LGP_Button{
+                display: flex;
+                flex: 1;
+                padding: 10px;
+                justify-content: center;
+                align-items: center;
+                border-radius: 2px;
+                cursor: pointer;
+
+                background-color: #1ab2ff;
+                color: white;
+            }
+
+            .LGP_Button:hover{
+                opacity: 0.8;
+            }
+
+        }
     }
 
 }

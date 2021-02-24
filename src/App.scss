@@ -1,5 +1,7 @@
 body{
     font-family: 'Source Sans Pro', sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 
 .App {
@@ -39,10 +41,6 @@ body{
     to {
         transform: rotate(360deg);
     }
-}
-
-div {
-    margin: 5px 5px;
 }
 
 .RandomColorBox {

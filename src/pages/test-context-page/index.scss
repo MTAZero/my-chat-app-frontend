@@ -1,0 +1,23 @@
+.TestContextPage {
+
+    .CounterControlComponent{
+        display: flex;
+        flex-direction: row;
+
+        .ButtonZ{
+            cursor: pointer;
+            height: 30px;
+            width: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: lightcoral;
+        }        
+
+        .ButtonZ:hover{
+            opacity: 0.7;
+        }
+
+    }
+
+}
