@@ -5,7 +5,6 @@ import actions from './actions';
 import { NotificationsService, setLocalData } from '../../utils/helper';
 import APIServices from '../../utils/api';
 
-
 function* saga_Login(action) {
     try {
         const { username, password } = action.payload;
@@ -22,7 +21,7 @@ function* saga_Login(action) {
                 actions.action.updateState({
                     session_key: sessionKey,
                     isLoggedIn: true,
-                    // isLoading: false,
+                    isLoading: false,
                     userInfo,
                     current_user_info: userInfo,
                 }),
