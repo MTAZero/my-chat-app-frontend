@@ -13,9 +13,12 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom';
+
 import LoginPage from './pages/login-page';
 import ChatPage from './pages/chat-page';
 import TestContextPage from './pages/test-context-page'
+import { AdminRouter } from './routers'
+
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './redux/reducers';
@@ -35,8 +38,8 @@ const Main = () => {
                             <Route path="/test-context">
                                 <TestContextPage />
                             </Route>
-                            <Route path="/chat-page">
-                                <ChatPage />
+                            <Route path="/admin">
+                                <AdminRouter />
                             </Route>
                             <Route path="/login">
                                 <LoginPage />
