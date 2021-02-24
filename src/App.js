@@ -17,26 +17,34 @@ import LoginPage from './pages/login-page';
 import ChatPage from './pages/chat-page';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import rootReducer from './redux/reducers'
+import rootReducer from './redux/reducers';
+import { ThemeProvider, themes } from './context';
+import { LanguageProvider } from './context/language.context';
 
 const store = createStore(rootReducer);
 
 const Main = () => {
     return (
-        <Provider store={store}>
-            <Router>
-                <h1>My Chat Application</h1>
-                <Switch>
-                    <Route path="/login">
-                        <LoginPage />
-                    </Route>
-                    <Route path="/chat-page">
-                        <ChatPage />
-                    </Route>
-                    <Redirect to="/login" />
-                </Switch>
-            </Router>
-        </Provider>
+        <ThemeProvider>
+            <LanguageProvider>
+                <Provider store={store}>
+
+                    <Router>
+                        <h1>My Chat Application</h1>
+                        <Switch>
+                            <Route path="/login">
+                                <LoginPage />
+                            </Route>
+                            <Route path="/chat-page">
+                                <ChatPage />
+                            </Route>
+                            <Redirect to="/login" />
+                        </Switch>
+                    </Router>
+                    
+                </Provider>
+            </LanguageProvider>
+        </ThemeProvider>
     );
 };
 
