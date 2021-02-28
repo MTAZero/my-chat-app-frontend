@@ -1,12 +1,6 @@
 import { key_const } from '../../const';
-import { getLocalData } from '../../utils/helper';
+import { getLocalData, getSessionKey } from '../../utils/helper';
 import actions from './actions'
-
-const _getSessionKey = () => {
-    const session_key = getLocalData(key_const.session_key, null);
-    return session_key ? session_key : null;
-};
-
 
 const default_user = {
     fullName: "",
@@ -20,8 +14,8 @@ const default_user = {
 }
 
 const initState = {
-    isLoggedIn: _getSessionKey() !== null,
-    token: _getSessionKey(),
+    isLoggedIn: getSessionKey() !== null,
+    token: getSessionKey(),
     userInfo: default_user
 }
 

@@ -5,6 +5,7 @@ import actions from './actions';
 import { NotificationsService, setLocalData } from '../../utils/helper';
 import APIServices from '../../utils/api';
 import { key_const } from '../../const';
+import { RealtimeActions } from '../realtime/actions';
 
 function* saga_Login(action) {
     try {
@@ -123,6 +124,10 @@ function* saga_Logout() {
                 isLoading: false,
             }),
         );
+
+        yield put(
+            RealtimeActions.disconnect()
+        )
     } catch (ex) {
         console.log('[Auth] Logout Error : ', ex.message);
     }

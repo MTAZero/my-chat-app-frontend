@@ -1,8 +1,10 @@
 import { AuthActions } from './auth/actions'
+import { RealtimeActions } from './realtime/actions'
 
 export const useActions = () => {
     const actions = {
-        AuthActions 
+        AuthActions,
+        RealtimeActions
     }
 
     return actions
