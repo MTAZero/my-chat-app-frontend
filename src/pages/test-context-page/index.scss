@@ -1,4 +1,10 @@
 .TestContextPage {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: white;
+    margin: 20px;
+    padding: 10px;
 
     .CounterControlComponent{
         display: flex;
