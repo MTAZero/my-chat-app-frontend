@@ -1,14 +1,26 @@
-import { all, takeEvery, fork, put, select, take, delay } from 'redux-saga/effects';
-import { getSessionKey } from '../../utils/helper';
+import {
+    all,
+    takeEvery,
+    fork,
+    put,
+    select,
+    take,
+    delay,
+} from 'redux-saga/effects';
+import { getSessionKey, NotificationsService } from '../../utils/helper';
 import actions from './actions';
-import { channel } from 'redux-saga'
+import { channel } from 'redux-saga';
+
+import { store } from '../store'
 
 let ws = null;
-const coreChannel = channel()
+const coreChannel = channel();
 
 function* saga_Connect(action) {
     try {
         let url = action.payload.url;
+
+        
 
         let token = getSessionKey();
         ws = new WebSocket(url, token);
@@ -17,7 +29,7 @@ function* saga_Connect(action) {
             console.log('connected');
         };
 
-        ws.onmessage = (evt) => {
+        ws.onmessage = async (evt) => {
             const message = JSON.parse(evt.data);
 
             if (message.event === 'msgToClient') {
@@ -26,15 +38,21 @@ function* saga_Connect(action) {
                 try {
                     let data = message.data;
 
+                    let info = store.getState().auth.userInfo
+
                     if (data.from && data.content) {
                         let _message = {
                             from: data.from ? data.from : '',
                             content: data.content ? data.content : '',
-                        }
+                        };
 
-                        coreChannel.put(
-                            actions.action.pushMessage(_message)
-                        )
+                        coreChannel.put(actions.action.pushMessage(_message));
+
+                        if (_message.from !== info.fullname)
+                            NotificationsService.success(
+                                _message.content,
+                                _message.from,
+                            );
                     }
                 } catch (ex) {}
 
@@ -80,9 +98,9 @@ function* listen() {
     yield takeEvery(actions.type.DISCONNECT, saga_Disconnect);
 
     while (true) {
-        const action = yield take(coreChannel)
-        yield put(action)
-        yield delay(100)
+        const action = yield take(coreChannel);
+        yield put(action);
+        yield delay(100);
     }
 }
 

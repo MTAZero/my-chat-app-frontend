@@ -3,7 +3,7 @@ import { getLocalData, getSessionKey } from '../../utils/helper';
 import actions from './actions'
 
 const default_user = {
-    fullName: "",
+    fullname: "",
     phone: "",
     sex: 1,
     dob: new Date(),
