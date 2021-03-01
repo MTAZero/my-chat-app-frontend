@@ -1,4 +1,13 @@
 .SideBar {
-    background-color: rgb(251, 194, 144);
-    width: 250px;
+
+    .SB_Logo{
+        height: 60px;
+        // background-color: #004d99;
+        color: white;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
 }

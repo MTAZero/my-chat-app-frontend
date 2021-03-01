@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import './App.scss';
 import 'react-notifications-component/dist/theme.css';
 import './resource/scss/notifycation.scss';
+import 'antd/dist/antd.css';
 import * as _ from 'lodash';
 
 import {

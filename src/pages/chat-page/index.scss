@@ -1,0 +1,90 @@
+.ChatPage{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: white;
+    margin: 20px;
+    padding: 10px;
+
+    .CP_MessagePanel{
+        flex: 1;
+        display: flex;
+        border-bottom: 1px solid #e2e2e2;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        flex-direction: column;
+
+        .MessageItem{
+            max-width: 40%;
+            display: flex;
+            flex-direction: column;
+            background-color: #f2f2f2;
+            color: black;
+
+            margin-bottom: 5px;
+            padding: 10px;
+            align-self: flex-start;
+            border-radius: 5px;
+            // min-width: 20%;
+
+            .MessageTitle{
+                font-weight: 600;
+                
+            }
+
+            .MessageContent{
+
+            }
+        }
+
+        .OwnMessage{
+            // justify-self: flex-end;
+            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+
+            align-items: flex-end;
+            background-color: #0099ff;
+            color: white;
+
+            .MessageTitle{
+
+            }
+            
+        }
+    }
+
+    .CP_InputPanel{
+        display: flex;
+        flex-direction: row;
+
+        .InputTextInput{
+            flex: 1;
+            background-color: #f2f2f2;
+            color: black;
+            border: none;
+            height: 60px;
+            resize: none;
+
+            padding: 10px;
+        }
+
+        .InputTextInput:focus{
+            outline: none;
+        }
+
+        .ButtonSend{
+            margin-left: 10px;
+            margin-right: 10px;
+            
+            text-transform: uppercase;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .ButtonSend:hover{
+            color: green;
+        }
+    }
+}

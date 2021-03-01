@@ -21,10 +21,10 @@ export const AdminRouter = () => {
     return (
         <Route>
             <div className="MainApp">
-                <TopBar />
+                <SideBar />
 
                 <div className="MainContainer">
-                    <SideBar />
+                    <TopBar />
 
                     <div className="MainContent">
                         <Switch>
