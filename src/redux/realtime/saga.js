@@ -16,11 +16,61 @@ import { store } from '../store'
 let ws = null;
 const coreChannel = channel();
 
+const reconnect = (url) => {
+    try {
+        coreChannel.put(
+            actions.action.connect(url)
+        )
+    }
+    catch (ex){
+        setTimeout(() => {
+            reconnect(url);
+        }, 5000);
+    }
+}
+
+const onMessage = async (evt) => {
+    const message = JSON.parse(evt.data);
+
+    if (message.event === 'msgToClient') {
+        console.log('onMessage ', message);
+
+        try {
+            let data = message.data;
+
+            let info = store.getState().auth.userInfo
+
+            if (data.from && data.content) {
+                let _message = {
+                    from: data.from ? data.from : '',
+                    content: data.content ? data.content : '',
+                };
+
+                coreChannel.put(actions.action.pushMessage(_message));
+
+                if (_message.from !== info.fullname)
+                    NotificationsService.success(
+                        _message.content,
+                        _message.from,
+                    );
+            }
+        } catch (ex) {}
+
+        console.log('onMessage 2', message);
+    }
+}
+
+const onClose = (url) => {
+    console.log('disconnected');
+
+    setTimeout(() => {
+        reconnect(url);
+    }, 5000);
+}
+
 function* saga_Connect(action) {
     try {
         let url = action.payload.url;
-
-        
 
         let token = getSessionKey();
         ws = new WebSocket(url, token);
@@ -29,39 +79,10 @@ function* saga_Connect(action) {
             console.log('connected');
         };
 
-        ws.onmessage = async (evt) => {
-            const message = JSON.parse(evt.data);
-
-            if (message.event === 'msgToClient') {
-                console.log('onMessage ', message);
-
-                try {
-                    let data = message.data;
-
-                    let info = store.getState().auth.userInfo
-
-                    if (data.from && data.content) {
-                        let _message = {
-                            from: data.from ? data.from : '',
-                            content: data.content ? data.content : '',
-                        };
-
-                        coreChannel.put(actions.action.pushMessage(_message));
-
-                        if (_message.from !== info.fullname)
-                            NotificationsService.success(
-                                _message.content,
-                                _message.from,
-                            );
-                    }
-                } catch (ex) {}
-
-                console.log('onMessage 2', message);
-            }
-        };
+        ws.onmessage = onMessage;
 
         ws.onclose = () => {
-            console.log('disconnected');
+            onClose(url)
         };
     } catch (ex) {
         console.log('[Saga_Auth] saga_Connect error ', ex.message);
@@ -100,7 +121,7 @@ function* listen() {
     while (true) {
         const action = yield take(coreChannel);
         yield put(action);
-        yield delay(100);
+        yield delay(300);
     }
 }
 
