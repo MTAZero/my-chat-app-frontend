@@ -8,5 +8,8 @@ export default {
 
     "username": "用户名",
     "password": "密码",
-    "login": "登录"
+    "login": "登录",
+
+    "setting": "环境",
+    "chatting": "信息"
 }

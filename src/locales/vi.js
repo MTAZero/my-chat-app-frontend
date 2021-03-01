@@ -8,5 +8,8 @@ export default {
 
     "username": "Tài khoản",
     "password": "Mật khẩu",
-    "login": "Đăng nhập"
+    "login": "Đăng nhập",
+
+    "setting": "Cài đặt",
+    "chatting": "Tin nhắn"
 }

@@ -8,21 +8,31 @@ import { SettingFilled, MessageFilled } from '@ant-design/icons';
 import './index.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActions } from '../../../redux';
+import { useLanguage } from '../../../context/language.context';
+import { themes, useTheme } from '../../../context';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 const SideBar = () => {
-    const collapsed = useSelector(state => state.ui_global.sidebar_collapse)
-    const dispatch = useDispatch()
-    const actions = useActions()
+    const collapsed = useSelector((state) => state.ui_global.sidebar_collapse);
+    const dispatch = useDispatch();
+    const actions = useActions();
 
     const [mode, setMode] = useState('inline');
-    const [theme, setTheme] = useState('dark');
+    let theme = ''
+
+    const { t } = useLanguage();
+    let themeLocal = useTheme()
+
+    if (themeLocal.currentTheme === themes.dark)
+        theme = 'dark'
+    else 
+        theme = 'light'
 
     const setCollapsed = (collapsed) => {
-        dispatch(actions.UIGlobalActions.updateSidebarCollapse(collapsed))
-    }
+        dispatch(actions.UIGlobalActions.updateSidebarCollapse(collapsed));
+    };
 
     const onCollapse = (collapsed) => {
         console.log(collapsed);
@@ -43,18 +53,18 @@ const SideBar = () => {
                     fontSize: collapsed ? 14 : 18,
                 }}
                 onClick={() => {
-                    setCollapsed(!collapsed)
+                    setCollapsed(!collapsed);
                 }}
             >
                 SPEEDX
             </div>
             <Menu theme={theme} defaultSelectedKeys={['1']} mode={mode}>
                 <Menu.Item key="1" icon={<MessageFilled />}>
-                    <Link to={RouterLinks.ChatPage}>Tin nhắn</Link>
+                    <Link to={RouterLinks.ChatPage}>{t('chatting')}</Link>
                 </Menu.Item>
 
                 <Menu.Item key="2" icon={<SettingFilled />}>
-                    <Link to={RouterLinks.TestContext}>Cài đặt</Link>
+                    <Link to={RouterLinks.TestContext}>{t('setting')}</Link>
                 </Menu.Item>
 
                 {/* <SubMenu key="sub1" icon={<UserOutlined />} title="User">

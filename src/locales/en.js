@@ -8,5 +8,8 @@ export default {
 
     "username": "Username",
     "password": "Password",
-    "login": "Login"
+    "login": "Login",
+
+    "setting": "Setting",
+    "chatting": "Messages"
 }
