@@ -44,7 +44,7 @@ const SideBar = () => {
             collapsible
             collapsed={collapsed}
             onCollapse={onCollapse}
-            width={300}
+            width={250}
             className="SideBar"
         >
             <div

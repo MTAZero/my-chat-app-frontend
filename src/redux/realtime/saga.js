@@ -11,23 +11,21 @@ import { getSessionKey, NotificationsService } from '../../utils/helper';
 import actions from './actions';
 import { channel } from 'redux-saga';
 
-import { store } from '../store'
+import { store } from '../store';
+import APIServices from '../../utils/api';
 
 let ws = null;
 const coreChannel = channel();
 
 const reconnect = (url) => {
     try {
-        coreChannel.put(
-            actions.action.connect(url)
-        )
-    }
-    catch (ex){
+        coreChannel.put(actions.action.connect(url));
+    } catch (ex) {
         setTimeout(() => {
             reconnect(url);
         }, 5000);
     }
-}
+};
 
 const onMessage = async (evt) => {
     const message = JSON.parse(evt.data);
@@ -38,12 +36,16 @@ const onMessage = async (evt) => {
         try {
             let data = message.data;
 
-            let info = store.getState().auth.userInfo
+            let info = store.getState().auth.userInfo;
 
             if (data.from && data.content) {
                 let _message = {
-                    from: data.from ? data.from : '',
-                    content: data.content ? data.content : '',
+                    ...data,
+                    ...{
+                        from: data.from ? data.from : '',
+                        content: data.content ? data.content : '',
+                        user: data.user ? data.user : { avatar: '' },
+                    },
                 };
 
                 coreChannel.put(actions.action.pushMessage(_message));
@@ -58,7 +60,7 @@ const onMessage = async (evt) => {
 
         console.log('onMessage 2', message);
     }
-}
+};
 
 const onClose = (url) => {
     console.log('disconnected');
@@ -66,7 +68,7 @@ const onClose = (url) => {
     setTimeout(() => {
         reconnect(url);
     }, 5000);
-}
+};
 
 function* saga_Connect(action) {
     try {
@@ -82,7 +84,7 @@ function* saga_Connect(action) {
         ws.onmessage = onMessage;
 
         ws.onclose = () => {
-            onClose(url)
+            onClose(url);
         };
     } catch (ex) {
         console.log('[Saga_Auth] saga_Connect error ', ex.message);
@@ -113,10 +115,40 @@ function* saga_SendMessage(action) {
     }
 }
 
+function* saga_LoadMessageFromAPI(action) {
+    try {
+        let res = yield APIServices.Messages.getListMessage();
+
+        let messages = res;
+        yield put(actions.action.loadMessageSuccess(messages));
+    } catch (ex) {
+        console.log('[Saga_Auth] saga_LoadMessageFromAPI error ', ex.message);
+    }
+}
+
+function* saga_LoadMoreMessages(action) {
+    try {
+        const { from, number } = action.payload;
+
+        let messages = yield APIServices.Messages.getListMessage(from, number);
+
+        let _oldMessages = yield select((state) => state.realtime.messages);
+        if (messages[messages.length - 1].timestamp < _oldMessages[0].timestamp)
+            yield put(actions.action.loadMoreMessageSuccess(messages));
+    } catch (ex) {
+        console.log('[Saga_Auth] saga_LoadMessageFromAPI error ', ex.message);
+    }
+}
+
 function* listen() {
     yield takeEvery(actions.type.CONNECT, saga_Connect);
     yield takeEvery(actions.type.SEND_MESSAGE, saga_SendMessage);
     yield takeEvery(actions.type.DISCONNECT, saga_Disconnect);
+    yield takeEvery(
+        actions.type.LOAD_MESSAGE_FROM_API,
+        saga_LoadMessageFromAPI,
+    );
+    yield takeEvery(actions.type.LOAD_MORE_MESSAGE, saga_LoadMoreMessages);
 
     while (true) {
         const action = yield take(coreChannel);

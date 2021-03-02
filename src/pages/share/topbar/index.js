@@ -78,7 +78,7 @@ const TopBar = () => {
                 <Popover
                     placement="bottomRight"
                     content={renderUserInfo}
-                    trigger="click hover"
+                    trigger="click"
                 >
                     <img className="TB_InfoAvatar" src={userInfo.avatar} />
                 </Popover>
