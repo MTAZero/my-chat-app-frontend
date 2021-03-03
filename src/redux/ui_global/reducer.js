@@ -1,7 +1,7 @@
 import actions from './actions'
 
 const initState = {
-    sidebar_collapse: false
+    sidebar_collapse: window.innerWidth > 1300 ? false : true
 }
 
 const reducer = (state = initState, action) => {

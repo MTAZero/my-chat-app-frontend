@@ -8,51 +8,30 @@ import 'moment/locale/vi';
 
 // api
 import APIServices from '../../utils/api';
-import { useSock } from '../../hooks';
+import { useCurrentTimeHooks, useSock, usePrevious } from '../../hooks';
 import { useActions } from '../../redux';
 
 // scss
 import './index.scss';
-import { usePrevious } from '../../hooks/usePrevious';
+import { AppConfigs } from '../../configs';
 
+// setting moment
 moment.locale('vi');
 
-// moment.lang("vi").format('dd/MM/yyyy');
-
-function useCustomTimeHooks() {
-    function getCurrentTime() {
-        let date = new Date();
-        return (
-            date.getHours() +
-            ': ' +
-            date.getMinutes() +
-            ': ' +
-            date.getSeconds()
-        );
-    }
-
-    let [time, setTime] = useState(getCurrentTime());
-
-    setTimeout(() => {
-        setTime(getCurrentTime());
-    }, 1000);
-
-    return [time];
-}
-
 const ChatPage = () => {
-    let time = useCustomTimeHooks();
-
     const [chatText, setChatText] = useState('');
+
     const messages = useSelector((state) => state.realtime.messages);
+    const isLoadingMore = useSelector((state) => state.realtime.isLoadingMore);
 
     const messagesRef = useRef(null);
     const messageTopRef = useRef(null);
 
+    const [messageHeight, setMessageHeight] = useState(0);
+
     let prv_messages = usePrevious(messages);
 
-    // let token = useSelector(state => state.auth.token)
-    let socketUrl = 'ws://localhost:3001';
+    let socketUrl = AppConfigs.ServerConfigs.socket_server;
     let dispatch = useDispatch();
     let actions = useActions();
 
@@ -60,39 +39,54 @@ const ChatPage = () => {
 
     useEffect(() => {
         dispatch(actions.RealtimeActions.connect(socketUrl));
-
         dispatch(actions.RealtimeActions.loadMessageFromApi());
     }, []);
 
     // scroll to bot message
     useEffect(() => {
         try {
+            let element = document.getElementById('CP_MessagePanel');
+            let height = element.scrollHeight;
+
+            // scroll old position
+            let current = element.scrollTop;
+            element.scrollTop = current + height - messageHeight;
+
+            // update height message panel
+            setMessageHeight(height);
+
             // scroll to bottom
             if (
-                prv_messages.length ===0 ||
+                prv_messages.length === 0 ||
                 prv_messages[prv_messages.length - 1]._id !==
                     messages[messages.length - 1]._id
             )
                 messagesRef.current?.scrollIntoView({ behavior: 'smooth' });
 
             // scroll to top
-            if (prv_messages[0]._id !== messages[0]._id)
-                messageTopRef.current?.scrollIntoView({ behavior: 'smooth' });
+            // if (prv_messages[0]._id !== messages[0]._id)
+            //     messageTopRef.current?.scrollIntoView({ behavior: 'smooth' });
         } catch (ex) {}
     }, [messages]);
 
+    const [scrollTop, setScrollTop] = useState(0);
     useLayoutEffect(() => {
-        const throttledFunc = () => {
-            console.log('scroll');
+        let element = document.getElementById('CP_MessagePanel');
+
+        const onScroll = (e) => {
+            if (element.scrollTop <= 100 && !isLoadingMore) {
+                _handleLoadMoreMessages();
+            }
+
+            setScrollTop(e.scrollTop);
         };
 
-        console.log("laa")
+        element.addEventListener('scroll', onScroll);
 
-        window.addEventListener('scroll', throttledFunc, false);
         return () => {
-            window.removeEventListener('scroll', throttledFunc);
+            element.removeEventListener('scroll', onScroll);
         };
-    });
+    }, [scrollTop]);
 
     const _handleClickAddMessage = () => {
         let text = chatText;
@@ -111,26 +105,12 @@ const ChatPage = () => {
     };
 
     const _handleLoadMoreMessages = () => {
-        let from = new Date().getTime();
-
-        if (messages.length > 0) from = messages[0].timestamp - 1;
-
-        dispatch(actions.RealtimeActions.loadMoreMessage(from));
+        if (!isLoadingMore) dispatch(actions.RealtimeActions.loadMoreMessage());
     };
 
     return (
         <div className="ChatPage">
-            {/* <h2>Chat page: {time}</h2> */}
-
-            <div
-                onClick={() => {
-                    _handleLoadMoreMessages();
-                }}
-            >
-                load thêm
-            </div>
-
-            <div className="CP_MessagePanel">
+            <div className="CP_MessagePanel" id="CP_MessagePanel">
                 <div ref={messageTopRef} />
                 {messages.map((message, index) => {
                     let className = 'MessageItem';
@@ -140,10 +120,6 @@ const ChatPage = () => {
                     let avatar = '';
                     if (message.user && message.user.avatar)
                         avatar = message.user.avatar;
-
-                    // let _time = new Date(message.timestamp)
-
-                    // console.log("avatar : ", avatar)
 
                     return (
                         <div className={className} key={index}>

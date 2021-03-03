@@ -1,9 +1,9 @@
 import Axios from "axios";
 import { getSessionKey } from "../helper/storageHelper";
-
-import { server } from "./configs";
-
 import https from "https";
+import { AppConfigs } from "../../configs";
+
+let server = AppConfigs.ServerConfigs.server
 
 const _makeRequest = (instantAxios) => async (args) => {
     const _headers = args.headers ? args.headers : {};

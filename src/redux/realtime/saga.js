@@ -128,15 +128,40 @@ function* saga_LoadMessageFromAPI(action) {
 
 function* saga_LoadMoreMessages(action) {
     try {
-        const { from, number } = action.payload;
+        let { number } = action.payload;
 
-        let messages = yield APIServices.Messages.getListMessage(from, number);
+        let isLoadingMore = yield select(
+            (state) => state.realtime.isLoadingMore,
+        );
+        let old_messages = yield select(state => state.realtime.messages)
+        let from = old_messages[0] ? old_messages[0].timestamp - 1 : new Date().getTime()
+
+        let messages = [];
+        if (!isLoadingMore){
+            yield put(actions.action.updateState({
+                isLoadingMore: true
+            }))
+
+            messages = yield APIServices.Messages.getListMessage(from, number);
+
+            yield put(actions.action.updateState({
+                isLoadingMore: false
+            }))
+        }
 
         let _oldMessages = yield select((state) => state.realtime.messages);
-        if (messages[messages.length - 1].timestamp < _oldMessages[0].timestamp)
+        if (
+            messages.length >= 1 &&
+            messages[messages.length - 1].timestamp < _oldMessages[0].timestamp
+        ){
             yield put(actions.action.loadMoreMessageSuccess(messages));
+        }
     } catch (ex) {
-        console.log('[Saga_Auth] saga_LoadMessageFromAPI error ', ex.message);
+        console.log('[Saga_Auth] saga_LoadMoreMessages error ', ex.message);
+
+        yield put(actions.action.updateState({
+            isLoadingMore: false
+        }))
     }
 }
 

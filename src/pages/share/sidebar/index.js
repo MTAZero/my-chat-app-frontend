@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouterLinks } from '../../../const';
 
@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useActions } from '../../../redux';
 import { useLanguage } from '../../../context/language.context';
 import { themes, useTheme } from '../../../context';
+import { useWindowSize } from '../../../hooks';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -19,6 +20,17 @@ const SideBar = () => {
     const dispatch = useDispatch();
     const actions = useActions();
 
+    // widow size 
+    let windowSize = useWindowSize()
+    useEffect(() => {
+        if (windowSize.width<800)
+            setCollapsed(true)
+
+        if (windowSize.width>1300)
+            setCollapsed(false)
+    }, [])
+
+    // theme and lange
     const [mode, setMode] = useState('inline');
     let theme = ''
 

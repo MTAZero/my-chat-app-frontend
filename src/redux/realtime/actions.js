@@ -1,6 +1,8 @@
 const prefix = 'realtime/'
 
 const type = {
+    UPDATE_STATE: prefix + 'update_state',
+
     CONNECT: prefix + 'connect',
     SEND_MESSAGE: prefix + 'send_message',
     DISCONNECT: prefix + 'disconnect',
@@ -15,6 +17,15 @@ const type = {
 }
 
 const action = {
+    updateState: (state = {}) => {
+        return {
+            type: type.UPDATE_STATE,
+            payload: {
+                state
+            }
+        }
+    },
+
     connect: (url = '') => {
         return {
             type: type.CONNECT,
@@ -73,11 +84,10 @@ const action = {
         }
     },
 
-    loadMoreMessage: (from = new Date().getTime(), number = 10) => {
+    loadMoreMessage: (number = 10) => {
         return {
             type: type.LOAD_MORE_MESSAGE,
             payload: {
-                from,
                 number
             }
         }
